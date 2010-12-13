@@ -1,4 +1,5 @@
 require 'helper'
+require 'anvl'
 
 class TestNoidBinding < Test::Unit::TestCase
   context "Noid" do
@@ -18,6 +19,15 @@ class TestNoidBinding < Test::Unit::TestCase
 
       id2 = Noid::Identifier::Singleton.new id.id
       assert_equal(123, id2['abc'])
+    end
+
+    should "user anvl instance to persist NOID binding info" do
+      n = Noid::Minter.new :template => 'r.rek', :identifier_class => Noid::Identifier::Anvl
+      id = n.mint
+      id['abc'] = 123
+      assert_equal(Noid::Identifier::Anvl, id.class)
+      assert_equal("123", id['abc'])
+
     end
   end
 end

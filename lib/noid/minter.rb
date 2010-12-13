@@ -58,14 +58,6 @@ module Noid
       str
     end
 
-    def hold id
-
-    end
-
-    def release id
-
-    end
-
     def valid? id
       prefix = id[0..@prefix.length-1]
       ch = id[@prefix.length..-1].split('')

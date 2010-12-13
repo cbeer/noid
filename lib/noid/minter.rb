@@ -9,6 +9,9 @@ module Noid
       @min = nil
 
       @prefix, @mask = args[:template].split('.')
+
+      @prefix = "#{args[:namespace]}/#{@prefix}" if args[:namespace]
+
       @type, @characters = @mask.split '', 2
       @characters = @characters.split ''
       @check = @characters.pop and true if @characters.last == 'k'
@@ -63,12 +66,22 @@ module Noid
 
     end
 
-    def validate id
+    def valid? id
+      prefix = id[0..@prefix.length-1]
+      ch = id[@prefix.length..-1].split('')
+      check = ch.pop if @check
+      return false unless prefix == @prefix
 
+      return false unless @characters.length == ch.length
+      @characters.each_with_index do |c, i|
+        return false unless XDIGIT.include? ch[i] 
+        return false if c == 'd' and ch[i] =~ /[^\d]/
+      end
+
+      return false unless check.nil? or check == checkdigit(id[0..-2])
+
+      true
     end
-
-
-    private
 
     def s
       @s

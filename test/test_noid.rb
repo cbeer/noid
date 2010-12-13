@@ -105,5 +105,30 @@ class TestNoid < Test::Unit::TestCase
       }
       assert_equal('z38fs', n.mint)
     end
+
+    should "validate 'r' digit sequences" do
+      n = Noid::Minter.new :template => 'r.rd'
+
+      assert_equal(true, n.valid?('r1')   )
+      assert_equal(true, n.valid?('r9')  )
+      assert_equal(false, n.valid?('r11')  )
+      assert_equal(false, n.valid?('ro'))
+      assert_equal(false, n.valid?('rb'))
+    end
+
+    should "validate 'r' xdigit sequences" do
+      n = Noid::Minter.new :template => 'r.re'
+
+      assert_equal(true, n.valid?('r1')   )
+      assert_equal(true, n.valid?('r9')  )
+      assert_equal(false, n.valid?('ro'))
+      assert_equal(true, n.valid?('rb'))
+    end
+    should "validate 'r' xdigit + checkdigit sequences" do
+      n = Noid::Minter.new :template => 'r.rek'
+
+      assert_equal(true, n.valid?('r2w')   )
+      assert_equal(false, n.valid?('r2b')  )
+    end
   end
 end

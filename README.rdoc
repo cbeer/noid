@@ -1,6 +1,6 @@
 = noid
 
-Description goes here.
+Ruby implementation of NOID (Nice Opaque Identifier)
 
 == Contributing to noid
  

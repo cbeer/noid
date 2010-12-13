@@ -15,8 +15,8 @@ Jeweler::Tasks.new do |gem|
   gem.name = "noid"
   gem.homepage = "http://github.com/cbeer/noid"
   gem.license = "MIT"
-  gem.summary = %Q{TODO: one-line summary of your gem}
-  gem.description = %Q{TODO: longer description of your gem}
+  gem.summary = %Q{Nice Opaque Identifier}
+  gem.description = %Q{}
   gem.email = "chris@cbeer.info"
   gem.authors = ["Chris Beer"]
   # Include your dependencies below. Runtime dependencies are required when using your gem,

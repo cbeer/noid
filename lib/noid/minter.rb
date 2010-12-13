@@ -1,41 +1,18 @@
 module Noid
   class Minter
+
     XDIGIT = ['0','1','2','3','4','5','6','7','8','9','b','c','d','f','g','h','j','k','l','n','p','q','r','s','t','v','w','x','z']
     MAX_COUNTERS = 293
 
     def initialize args = {}
-
       @max = nil
       @min = nil
+      @identifier_class = nil
+      setup_persistence args
+      setup_identifier args
+      setup_mask args
+    end  
 
-      @identifier_class = args[:identifier_class]
-      @identifier_class ||= String
-
-      @prefix, @mask = args[:template].split('.')
-
-      @prefix = "#{args[:namespace]}/#{@prefix}" if args[:namespace]
-
-      @type, @characters = @mask.split '', 2
-      @characters = @characters.split ''
-      @check = @characters.pop and true if @characters.last == 'k'
-      case @type
-        when 's'
-          @s = 0
-        when 'z'
-          @s = 0
-        when 'r'
-
-          percounter = max / MAX_COUNTERS + 1
-          t = 0
-          @s = Array.new(max/percounter) do |i| 
-            { :value => case i
-              when 0 then 0
-              else t += percounter 
-              end, :max => t + percounter }
-          end
-      end
-      
-    end
 
     def mint
       str = @prefix
@@ -140,6 +117,43 @@ module Noid
       raise Exception if n > 0
 
       xdig.reverse
+    end
+
+    def setup_identifier args
+      @identifier_class = args[:identifier_class]
+      @identifier_class ||= String
+    end
+
+    def setup_persistence args
+      self.extend args[:persistence] if args[:persistence]
+    end
+
+    def setup_mask args
+      @prefix, @mask = args[:template].split('.')
+
+      @prefix = "#{args[:namespace]}/#{@prefix}" if args[:namespace]
+
+      @type, @characters = @mask.split '', 2
+      @characters = @characters.split ''
+      @check = @characters.pop and true if @characters.last == 'k'
+      case @type
+        when 's'
+          @s = 0
+        when 'z'
+          @s = 0
+        when 'r'
+
+          percounter = max / MAX_COUNTERS + 1
+          t = 0
+          @s = Array.new(max/percounter) do |i| 
+            { :value => case i
+              when 0 then 0
+              else t += percounter 
+              end, :max => t + percounter }
+          end
+      end
+      
+      
     end
   end
 end

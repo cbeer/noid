@@ -83,6 +83,7 @@ module Noid
       true
     end
 
+    protected
     def s
       @s
     end

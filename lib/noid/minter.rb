@@ -8,6 +8,9 @@ module Noid
       @max = nil
       @min = nil
 
+      @identifier_class = args[:identifier_class]
+      @identifier_class ||= String
+
       @prefix, @mask = args[:template].split('.')
 
       @prefix = "#{args[:namespace]}/#{@prefix}" if args[:namespace]
@@ -55,7 +58,7 @@ module Noid
 
       str += checkdigit(str) if @check
 
-      str
+      @identifier_class.new str
     end
 
     def valid? id

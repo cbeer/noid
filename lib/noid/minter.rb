@@ -1,3 +1,5 @@
+require 'backports'
+
 module Noid
   class Minter
 
@@ -26,10 +28,11 @@ module Noid
           @s += 1
           str += n2xdig(n)
         when 'r'
-          i = rand(@s.size)
-          n = @s[i][:value]
-          @s[i][:value] += 1
-          @s.delete_at(i) if @s[i][:value] == @s[i][:max]
+          i = @rand.rand(@counters.size)
+          n = @counters[i][:value]
+          @counters[i][:value] += 1
+          @s += 1
+          @counters.delete_at(i) if @counters[i][:value] == @counters[i][:max]
           str += n2xdig(n)
       end
 
@@ -145,7 +148,10 @@ module Noid
 
           percounter = max / MAX_COUNTERS + 1
           t = 0
-          @s = Array.new(max/percounter) do |i| 
+          @rand = Random.new
+          @seed = @rand.seed
+          @s = 0
+          @counters = Array.new(max/percounter) do |i| 
             { :value => case i
               when 0 then 0
               else t += percounter 

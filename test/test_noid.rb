@@ -19,10 +19,10 @@ class TestNoid < Test::Unit::TestCase
 
     should "generate quasi-random counters for type 'r'" do
       n = Noid::Minter.new :template => 's.rd'
-      assert_equal((0..9).map { |x| {:value => x, :max => (x + 1)} }, n.send(:s))
+      assert_equal((0..9).map { |x| {:value => x, :max => (x + 1)} }, n.instance_variable_get('@counters'))
 
       n = Noid::Minter.new :template => 's.rdde'
-      s = n.send(:s)
+      s = n.instance_variable_get('@counters')
       assert_contains(s, {:value => 2890, :max => 2900})
     end
 

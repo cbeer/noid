@@ -9,8 +9,16 @@ module Noid::Persistence
 
     def setup_mask args
       return super unless persisted_data
-      persisted_data.reject { |k,v| k == '@persisted_data' or k == '@identifier_class' }.each do |k, v|
+      persisted_data.reject { |k,v| k == '@identifier_class' }.each do |k, v|
         instance_variable_set(k, v)
+      end
+
+      @counters = @counters.map { |x| x.inject({}){|memo,(k,v)| memo[k.to_sym] = v; memo}} if @counters
+
+      if @seed
+        @rand = Random.new
+        @rand.srand @seed 
+        @s.times { @rand.rand }
       end
     end
 
@@ -27,8 +35,15 @@ module Noid::Persistence
     end
     def save
       File.open(FILENAME, 'w') do |f|
-        f.write(Hash[*instance_variables.reject { |x| x == '@persisted_data' }.map { |k| [k, instance_variable_get(k)]}.flatten].to_json)
+          str = instance_variables_to_hash.to_json
+        f.write(str)
       end
+    end
+
+    def instance_variables_to_hash
+      h = {}
+      instance_variables.reject { |x| x == '@rand' or x == '@persisted_data' }.each { |k| h[k] = instance_variable_get(k) }
+      h
     end
   end
 end

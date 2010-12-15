@@ -18,23 +18,20 @@ module Noid
 
     def mint
       str = @prefix
+      n = @s
+      @s += 1
+
       case @type
         when 's'
-          n = @s
-          @s += 1
-          str += n2xdig(n)
         when 'z'
-          n = @s
-          @s += 1
-          str += n2xdig(n)
         when 'r'
+          raise Exception if @counters.size == 0
           i = @rand.rand(@counters.size)
           n = @counters[i][:value]
           @counters[i][:value] += 1
-          @s += 1
           @counters.delete_at(i) if @counters[i][:value] == @counters[i][:max]
-          str += n2xdig(n)
       end
+      str += n2xdig(n)
 
       str += checkdigit(str) if @check
 

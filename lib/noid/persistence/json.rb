@@ -16,8 +16,7 @@ module Noid::Persistence
       @counters = @counters.map { |x| x.inject({}){|memo,(k,v)| memo[k.to_sym] = v; memo}} if @counters
 
       if @seed
-        @rand = Random.new
-        @rand.srand @seed 
+        @rand = Random.new @seed
         @s.times { @rand.rand }
       end
     end

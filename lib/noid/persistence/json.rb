@@ -1,18 +1,12 @@
 require 'json'
 module Noid::Persistence
-  class JSON < Noid::Base
+  class JSON < Base
     FILENAME = 'NOID.js'
     def initialize args = {}
       @file = args[:filename] || FILENAME
       data = load_json
       super data.merge(args)
       save
-    end
-
-    def mint
-      a = super
-      save
-      return a
     end
 
     protected

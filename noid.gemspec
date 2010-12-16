@@ -5,7 +5,7 @@
 
 Gem::Specification.new do |s|
   s.name = %q{noid}
-  s.version = "0.3.0"
+  s.version = "0.3.1"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Chris Beer"]
@@ -28,7 +28,9 @@ Gem::Specification.new do |s|
     "lib/noid/identifier.rb",
     "lib/noid/identifier/anvl.rb",
     "lib/noid/identifier/singleton.rb",
+    "lib/noid/minter.rb",
     "lib/noid/persistence.rb",
+    "lib/noid/persistence/base.rb",
     "lib/noid/persistence/json.rb",
     "noid.gemspec",
     "test/helper.rb",

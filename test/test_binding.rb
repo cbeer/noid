@@ -7,7 +7,7 @@ class TestNoidBinding < Test::Unit::TestCase
     should "accept identifier_class for NOID bindings" do
       Dir.mktmpdir do |d|
         Dir.chdir d
-        n = Noid::Minter.new :template => 'r.rek', :identifier_class => Noid::Identifier::Base
+        n = Noid::Base.new :template => 'r.rek', :identifier => { :class => Noid::Identifier::Base }
         id = n.mint
         assert_equal(Noid::Identifier::Base, id.class)
         id['abc'] = 123
@@ -18,7 +18,7 @@ class TestNoidBinding < Test::Unit::TestCase
     should "use singleton instance to persist  NOID bindings" do
       Dir.mktmpdir do |d|
         Dir.chdir d
-        n = Noid::Minter.new :template => 'r.rek', :identifier_class => Noid::Identifier::Singleton
+        n = Noid::Base.new :template => 'r.rek', :identifier => { :class => Noid::Identifier::Singleton }
         id = n.mint
         id['abc'] = 123
         assert_equal(123, id['abc'])
@@ -31,7 +31,7 @@ class TestNoidBinding < Test::Unit::TestCase
     should "user anvl instance to persist NOID binding info" do
       Dir.mktmpdir do |d|
         Dir.chdir d
-        n = Noid::Minter.new :template => 'r.rek', :identifier_class => Noid::Identifier::Anvl
+        n = Noid::Base.new :template => 'r.rek', :identifier => { :class => Noid::Identifier::Anvl }
         id = n.mint
         id['abc'] = "123"
         assert_equal(Noid::Identifier::Anvl, id.class)

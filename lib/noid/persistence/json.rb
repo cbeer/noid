@@ -1,24 +1,12 @@
 require 'json'
 module Noid::Persistence
-  module JSON
+  class JSON < Noid::Base
     FILENAME = 'NOID.js'
-    def setup_identifier args
-      return super unless persisted_data
-      @identifier_class = Kernel.const_get(persisted_data['@identifier_class']) 
-    end
-
-    def setup_mask args
-      return super unless persisted_data
-      persisted_data.reject { |k,v| k == '@identifier_class' }.each do |k, v|
-        instance_variable_set(k, v)
-      end
-
-      @counters = @counters.map { |x| x.inject({}){|memo,(k,v)| memo[k.to_sym] = v; memo}} if @counters
-
-      if @seed
-        @rand = Random.new @seed
-        @s.times { @rand.rand }
-      end
+    def initialize args = {}
+      @file = args[:filename] || FILENAME
+      data = load_json
+      super data.merge(args)
+      save
     end
 
     def mint
@@ -28,21 +16,21 @@ module Noid::Persistence
     end
 
     protected
-    def persisted_data
-      @persisted_data ||= ::JSON.parse(File.read(FILENAME)) if File.exists? FILENAME
-      @persisted_data
+    def load_json
+      data = ::JSON.parse(File.read(@file)) if File.exists? @file
+      data ||= {}
+      data = data.inject({}){|memo,(k,v)| memo[k.to_sym] = v; memo} unless data.empty?
+      data[:counters] = data[:counters].map { |x| x.inject({}){|memo,(k,v)| memo[k.to_sym] = v; memo} } if data[:counters]
+      data[:identifier] = { :class => Kernel.const_get(data[:identifier]['class']) } if data[:identifier]
+      data
     end
+
     def save
-      File.open(FILENAME, 'w') do |f|
-          str = instance_variables_to_hash.to_json
+      File.open(@file, 'w') do |f|
+          str = { :identifier => { :class => identifier }, :s => @s, :counters => @counters, :seed => @seed, }.to_json
         f.write(str)
       end
     end
 
-    def instance_variables_to_hash
-      h = {}
-      instance_variables.reject { |x| x == '@rand' or x == '@persisted_data' }.each { |k| h[k] = instance_variable_get(k) }
-      h
-    end
   end
 end

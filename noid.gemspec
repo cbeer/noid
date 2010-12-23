@@ -5,11 +5,11 @@
 
 Gem::Specification.new do |s|
   s.name = %q{noid}
-  s.version = "0.3.1"
+  s.version = "0.4.0"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Chris Beer"]
-  s.date = %q{2010-12-16}
+  s.date = %q{2010-12-23}
   s.description = %q{}
   s.email = %q{chris@cbeer.info}
   s.extra_rdoc_files = [
@@ -23,7 +23,10 @@ Gem::Specification.new do |s|
     "README.rdoc",
     "Rakefile",
     "VERSION",
+    "doc/active_record_sample.rb",
     "lib/noid.rb",
+    "lib/noid/active_record.rb",
+    "lib/noid/active_record/provider.rb",
     "lib/noid/base.rb",
     "lib/noid/identifier.rb",
     "lib/noid/identifier/anvl.rb",

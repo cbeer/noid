@@ -9,6 +9,7 @@ module Noid
       @max = nil
       @min = nil
       @config = { :identifier => {} }.merge args
+      super() if respond_to?('super')
       setup_mask args
     end  
 
@@ -117,7 +118,8 @@ module Noid
     end
 
     def setup_mask args
-      @prefix, @mask = args[:template].split('.')
+      @template = args[:template]
+      @prefix, @mask = @template.split('.')
 
       @prefix = "#{args[:namespace]}/#{@prefix}" if args[:namespace]
 

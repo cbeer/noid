@@ -1,5 +1,4 @@
 require 'backports'
-require 'backports'
 
 module Noid
   class Minter
@@ -12,29 +11,19 @@ module Noid
       @template_string = args[:template]
       @max_counters = args[:max_counters]
       @counters = args[:counters]
+
+      @after_mint = args[:after_mint]
     end  
 
     ##
     # Mint a new identifier
     def mint
-      n = nil
-
-
-      case template.generator
-        when 's'
-          n = next_in_sequence
-        when 'z'
-          n = next_in_sequence
-        when 'r'
-          raise Exception if counters.size == 0
-          i = @rand.rand(counters.size)
-          next_in_sequence
-          n = counters[i][:value]
-          counters[i][:value] += 1
-          counters.delete_at(i) if counters[i][:value] == counters[i][:max]
+      n = next_in_sequence
+      id = template.mint(n)
+      if @after_mint
+        @after_mint.call(self, id)
       end
-
-      template.mint(n)
+      id
     end
 
     ##
@@ -84,6 +73,14 @@ module Noid
     def next_in_sequence
       n = @seq
       @seq += 1
+      case template.generator
+        when 'r'
+          raise Exception if counters.size == 0
+          i = @rand.rand(counters.size)
+          n = counters[i][:value]
+          counters[i][:value] += 1
+          counters.delete_at(i) if counters[i][:value] == counters[i][:max]
+      end
       n
     end
 

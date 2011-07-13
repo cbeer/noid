@@ -5,11 +5,11 @@ require "noid/version"
 Gem::Specification.new do |s|
   s.name        = "noid"
   s.version     = Noid::VERSION
-  s.authors     = ["TODO: Write your name"]
-  s.email       = ["chris_beer@wgbh.org"]
-  s.homepage    = ""
-  s.summary     = %q{TODO: Write a gem summary}
-  s.description = %q{TODO: Write a gem description}
+  s.authors     = ["Chris Beer"]
+  s.email       = ["chris@cbeer.info"]
+  s.homepage    = "http://github.com/microservices/noid"
+  s.summary     = %q{Nice Opaque Identifier}
+  s.description = %q{}
 
   s.rubyforge_project = "noid"
 

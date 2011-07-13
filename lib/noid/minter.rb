@@ -6,7 +6,6 @@ module Noid
     attr_writer :counters
 
     def initialize args = {}
-      @seq = 0
       seed(args[:seed], args[:seq])
       @template_string = args[:template]
       @max_counters = args[:max_counters]
@@ -64,6 +63,7 @@ module Noid
       @rand = Random.new(seed) if seed
       @rand ||= Random.new 
       @seed = @rand.seed
+      @seq = seq || 0
 
       seq.times { @rand.rand } if seq
 

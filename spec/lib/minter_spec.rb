@@ -109,12 +109,12 @@ describe Noid::Minter do
   describe "seed" do
     it "given a specific seed, identifiers should be replicable" do
       minter = Noid::Minter.new(:template => "63q.redek")
-      minter.seed(0)
-      minter.mint.should == "63qk208"
-
+      minter.seed(1)
+      minter.mint.should == "63q3706"
+      
       minter = Noid::Minter.new(:template => "63q.redek")
-      minter.seed(0)
-      minter.mint.should == "63qk208"
+      minter.seed(1)
+      minter.mint.should == "63q3706"
     end
 
     it "given a specific seed and sequence, identifiers should be replicable" do

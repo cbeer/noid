@@ -93,6 +93,19 @@ describe Noid::Minter do
     minter.mint.should =~ /63q\w\d\w\w/
   end
 
+  describe "validate" do
+    it "should validate a prefixed identifier" do
+      minter = Noid::Minter.new(:template => "foobar.redek")
+      id = minter.mint
+      minter.valid?(id).should be_true
+    end
+    it "should validate a prefixless identifier" do
+      minter = Noid::Minter.new(:template => ".redek")
+      id = minter.mint
+      minter.valid?(id).should be_true
+    end
+  end
+
   describe "seed" do
     it "given a specific seed, identifiers should be replicable" do
       minter = Noid::Minter.new(:template => "63q.redek")

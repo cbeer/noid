@@ -44,7 +44,7 @@ module Noid
       return false unless prefix == @template.prefix
 
       return false unless @template.characters.length == ch.length
-      @template.characters.each_with_index do |c, i|
+      @template.characters.split('').each_with_index do |c, i|
         return false unless Noid::XDIGIT.include? ch[i] 
         return false if c == 'd' and ch[i] =~ /[^\d]/
       end

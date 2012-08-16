@@ -1,3 +1,5 @@
+require 'spec_helper'
+
 describe Noid::Minter do
   it "should mint a few random 3-digit numbers" do
     minter = Noid::Minter.new(:template => '.rddd')

@@ -130,7 +130,7 @@ describe Noid::Minter do
     end
   end
 
-  describe "dump" do
+  describe "dump and reload" do
     it "should dump the minter state" do
       minter = Noid::Minter.new(:template => ".sddd")
       d = minter.dump
@@ -164,5 +164,6 @@ describe Noid::Minter do
     end
 
   end
+
 
 end

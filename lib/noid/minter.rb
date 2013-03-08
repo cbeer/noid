@@ -5,13 +5,21 @@ module Noid
     attr_reader :seed, :seq
     attr_writer :counters
 
-    def initialize args = {}
-      seed(args[:seed], args[:seq])
-      @template_string = args[:template]
-      @max_counters = args[:max_counters]
-      @counters = args[:counters]
+    def initialize options = {}
 
-      @after_mint = args[:after_mint]
+      if options[:state]
+        seed(options[:seed])
+        @seq = options[:seq]
+        @template_string = options[:template]
+        @counters = options[:counters]
+      else
+        seed(options[:seed], options[:seq])
+        @template_string = options[:template]
+        @max_counters = options[:max_counters]
+        @counters = options[:counters]
+
+        @after_mint = options[:after_mint]
+      end
     end  
 
     ##
@@ -108,7 +116,7 @@ module Noid
     end
 
     def dump
-      { :seq => @seq, :seed => @seed, :template => template.template, :counters => Marshal.load(Marshal.dump(counters)) }
+      { :state => true, :seq => @seq, :seed => @seed, :template => template.template, :counters => Marshal.load(Marshal.dump(counters)) }
     end
   end
 end

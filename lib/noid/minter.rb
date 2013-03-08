@@ -75,7 +75,7 @@ module Noid
       @seq += 1
       case template.generator
         when 'r'
-          raise Exception if counters.size == 0
+          raise Exception("Exhausted noid sequence pool") if counters.size == 0
           i = @rand.rand(counters.size)
           n = counters[i][:value]
           counters[i][:value] += 1

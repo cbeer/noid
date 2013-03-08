@@ -165,5 +165,35 @@ describe Noid::Minter do
 
   end
 
+  describe "multithreading-safe example" do
+    before do
+      require 'yaml'
+      minter = Noid::Minter.new(:template => '.rd')
+      yaml = YAML::dump(minter.dump)
+      File.open('minter-state', 'w') { |f| f.write yaml }
+    end
+
+    after do
+      File.delete('minter-state')
+    end
+
+    it "should persist state to the filesystem" do
+
+      File.open("minter-state", File::RDWR|File::CREAT, 0644) {|f|
+        f.flock(File::LOCK_EX)
+        yaml = YAML::load(f.read)
+        
+        minter = Noid::Minter.new(yaml)
+
+        f.rewind
+        yaml = YAML::dump(minter.dump)
+        f.write yaml
+        f.flush
+        f.truncate(f.pos)
+      }
+
+    end
+  end
+
 
 end

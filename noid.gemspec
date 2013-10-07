@@ -9,7 +9,8 @@ Gem::Specification.new do |s|
   s.email       = ["chris@cbeer.info"]
   s.homepage    = "http://github.com/microservices/noid"
   s.summary     = %q{Nice Opaque Identifier}
-  s.description = %q{}
+  s.description = %q{Nice Opaque Identifier}
+  s.licenses    = ["MIT"]
 
   s.rubyforge_project = "noid"
 

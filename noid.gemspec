@@ -9,7 +9,8 @@ Gem::Specification.new do |s|
   s.email       = ["chris@cbeer.info"]
   s.homepage    = "http://github.com/microservices/noid"
   s.summary     = %q{Nice Opaque Identifier}
-  s.description = %q{}
+  s.description = %q{Nice Opaque Identifier}
+  s.licenses    = ["MIT"]
 
   s.rubyforge_project = "noid"
 
@@ -18,7 +19,8 @@ Gem::Specification.new do |s|
   s.executables   = `git ls-files -- bin/*`.split("\n").map{ |f| File.basename(f) }
   s.require_paths = ["lib"]
 
-  s.add_dependency "backports"
+  s.required_ruby_version = '>= 1.9.3'
+
   s.add_development_dependency "bundler"
   s.add_development_dependency "rake"
   s.add_development_dependency "rspec", ">= 2.0"

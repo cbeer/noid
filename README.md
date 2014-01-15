@@ -2,6 +2,8 @@
 
 Ruby implementation of NOID (Nice Opaque Identifier)
 
+See the man page of the Perl utility for details about NOID: https://wiki.ucop.edu/download/attachments/16744482/noid.pdf
+
 ## Contributing to noid
  
 * Check out the latest master to make sure the feature hasn't been implemented or the bug hasn't been fixed yet

@@ -128,11 +128,16 @@ describe Noid::Minter do
     it "given a specific seed and sequence, identifiers should be replicable" do
       minter = Noid::Minter.new(:template => "63q.redek")
       minter.seed(23456789, 567)
-      minter.mint.should == "63qh305"
+      mint1 = minter.mint
+      dump1 = minter.dump
 
       minter = Noid::Minter.new(:template => "63q.redek")
       minter.seed(23456789, 567)
-      minter.mint.should == "63qh305"
+      mint2 = minter.mint
+      dump2 = minter.dump
+      expect(dump1).to eql(dump2)
+      expect(mint1).to eql(mint2)
+      mint1.should == "63qb41v" # "63qh305" was the value from a slightly buggy impl
     end
   end
 
@@ -169,6 +174,24 @@ describe Noid::Minter do
 
     end
 
+  end
+
+  describe "with large seeds" do
+    it "should not reproduce noids with constructed sequences" do
+      minter = Noid::Minter.new(:template => 'ldpd:.reeeeeeee')
+      minter.seed(192548637498850379850405658298152906991)
+      first_values = (1..1000).collect {|c| minter.mint}
+
+      values = []
+      (0..999).each do |i|
+        minter = Noid::Minter.new(:template => 'ldpd:.reeeeeeee')
+        minter.seed(192548637498850379850405658298152906991, i)
+        values << minter.mint
+        expect(values[i]).to eql first_values[i] 
+      end
+      values.uniq!
+      expect(values.length).to eql 1000
+    end
   end
 
   describe "multithreading-safe example" do

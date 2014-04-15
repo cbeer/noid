@@ -72,7 +72,7 @@ module Noid
       @seed = @rand.seed
       @seq = seq || 0
 
-      seq.times { @rand.rand } if seq
+      seq.times { next_random } if seq
 
       @rand
     end
@@ -82,12 +82,17 @@ module Noid
       @seq += 1
       case template.generator
         when 'r'
-          raise Exception("Exhausted noid sequence pool") if counters.size == 0
-          i = @rand.rand(counters.size)
-          n = counters[i][:value]
-          counters[i][:value] += 1
-          counters.delete_at(i) if counters[i][:value] == counters[i][:max]
+          n = next_random
       end
+      n
+    end
+
+    def next_random
+      raise Exception("Exhausted noid sequence pool") if counters.size == 0
+      i = @rand.rand(counters.size)
+      n = counters[i][:value]
+      counters[i][:value] += 1
+      counters.delete_at(i) if counters[i][:value] == counters[i][:max]
       n
     end
 

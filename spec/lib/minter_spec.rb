@@ -37,7 +37,7 @@ describe Noid::Minter do
     minter = Noid::Minter.new(:template => '.se')
     29.times.map { minter.mint }.join('').should == "0123456789bcdfghjkmnpqrstvwxz"
   end
-  
+
   it "should mint random 3-extended-digit numbers with constant prefix h9" do
     minter = Noid::Minter.new(:template => 'h9.reee')
 
@@ -99,18 +99,18 @@ describe Noid::Minter do
     it "should validate a prefixed identifier" do
       minter = Noid::Minter.new(:template => "foobar.redek")
       id = minter.mint
-      minter.valid?(id).should be_true
+      minter.valid?(id).should == true
     end
     it "should validate a prefixless identifier" do
       minter = Noid::Minter.new(:template => ".redek")
       id = minter.mint
-      minter.valid?(id).should be_true
+      minter.valid?(id).should == true
     end
     it "should validate with a new minter" do
       minter = Noid::Minter.new(:template => ".redek")
       id = minter.mint
       minter2 = Noid::Minter.new(:template => ".redek")
-      minter2.valid?(id).should be_true
+      minter2.valid?(id).should == true
     end
   end
 
@@ -119,7 +119,7 @@ describe Noid::Minter do
       minter = Noid::Minter.new(:template => "63q.redek")
       minter.seed(1)
       minter.mint.should == "63q3706"
-      
+
       minter = Noid::Minter.new(:template => "63q.redek")
       minter.seed(1)
       minter.mint.should == "63q3706"
@@ -187,7 +187,7 @@ describe Noid::Minter do
         minter = Noid::Minter.new(:template => 'ldpd:.reeeeeeee')
         minter.seed(192548637498850379850405658298152906991, i)
         values << minter.mint
-        expect(values[i]).to eql first_values[i] 
+        expect(values[i]).to eql first_values[i]
       end
       values.uniq!
       expect(values.length).to eql 1000
@@ -211,7 +211,7 @@ describe Noid::Minter do
       File.open("minter-state", File::RDWR|File::CREAT, 0644) {|f|
         f.flock(File::LOCK_EX)
         yaml = YAML::load(f.read)
-        
+
         minter = Noid::Minter.new(yaml)
 
         f.rewind
@@ -223,6 +223,5 @@ describe Noid::Minter do
 
     end
   end
-
 
 end

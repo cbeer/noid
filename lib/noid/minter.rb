@@ -4,7 +4,6 @@ module Noid
     attr_writer :counters
 
     def initialize options = {}
-
       if options[:state]
         seed(options[:seed])
         @seq = options[:seq]
@@ -19,7 +18,7 @@ module Noid
         @after_mint = options[:after_mint]
       end
       @template ||= Noid::Template.new(@template_string)
-    end  
+    end
 
     ##
     # Mint a new identifier
@@ -37,7 +36,7 @@ module Noid
     #
     # @return Noid::Template
     def template
-      @template 
+      @template
     end
 
     ##
@@ -52,7 +51,7 @@ module Noid
 
       return false unless @template.characters.length == ch.length
       @template.characters.split('').each_with_index do |c, i|
-        return false unless Noid::XDIGIT.include? ch[i] 
+        return false unless Noid::XDIGIT.include? ch[i]
         return false if c == 'd' and ch[i] =~ /[^\d]/
       end
 
@@ -68,7 +67,7 @@ module Noid
     # @return [Random]
     def seed seed = nil, seq = 0
       @rand = ::Random.new(seed) if seed
-      @rand ||= ::Random.new 
+      @rand ||= ::Random.new
       @seed = @rand.seed
       @seq = seq || 0
 
@@ -88,7 +87,7 @@ module Noid
     end
 
     def next_random
-      raise Exception("Exhausted noid sequence pool") if counters.size == 0
+      raise RuntimeError, 'Exhausted noid sequence pool' if counters.size == 0
       i = @rand.rand(counters.size)
       n = counters[i][:value]
       counters[i][:value] += 1

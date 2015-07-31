@@ -2,9 +2,9 @@ module Noid
   class Template
     attr_reader :template
 
-    # @param [String] template A Template is a coded string of the form Prefix.Mask that governs how identifiers will be minted. 
+    # @param [String] template A Template is a coded string of the form Prefix.Mask that governs how identifiers will be minted.
     def initialize template
-      @template = template  
+      @template = template
     end
 
     def mint n
@@ -31,7 +31,7 @@ module Noid
           when 'd'
             return false unless str[prefix.length + i] =~ /\d/
         end
-      end 
+      end
 
       return false unless checkdigit(str[0..-2]) == str.split('').last if checkdigit?
 
@@ -53,7 +53,7 @@ module Noid
     ##
     # generator type to use: r, s, z
     def generator
-      @generator ||= mask[0..0]  
+      @generator ||= mask[0..0]
     end
 
     ##
@@ -101,7 +101,6 @@ module Noid
       end
     end
 
-
     protected
     ##
     # total size of a given template character value
@@ -122,7 +121,7 @@ module Noid
     def n2xdig n
       xdig = characters.reverse.split('').map do |c|
         value = n % character_space(c)
-        n = n / character_space(c)  
+        n = n / character_space(c)
         Noid::XDIGIT[value]
       end.compact.join('')
 
@@ -130,12 +129,12 @@ module Noid
         c = characters.split('').last
         while n > 0
           value = n % character_space(c)
-          n = n / character_space(c)  
+          n = n / character_space(c)
           xdig += Noid::XDIGIT[value]
         end
       end
 
-      raise Exception if n > 0
+      raise RuntimeError, 'Exhausted noid sequence pool' if n > 0
 
       xdig.reverse
     end

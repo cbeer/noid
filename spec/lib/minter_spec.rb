@@ -9,7 +9,7 @@ describe Noid::Minter do
   it "should mint random 3-digit numbers, stopping after the 1000th" do
     minter = Noid::Minter.new(:template => '.rddd')
     1000.times { expect(minter.mint).to match(/^\d\d\d$/) }
-    expect { minter.mint }.to raise_exception
+    expect { minter.mint }.to raise_exception(RuntimeError, /Exhausted noid sequence pool/)
   end
 
   it "should mint sequential numbers without limit, adding new digits as needed" do
@@ -30,7 +30,7 @@ describe Noid::Minter do
     10.times { expect(minter.mint).to match(/^8rf\d\d$/) }
     expect(minter.mint).to eq("8rf11")
     88.times { expect(minter.mint).to match(/^8rf\d\d$/) }
-    expect { minter.mint }.to raise_exception
+    expect { minter.mint }.to raise_exception(RuntimeError, /Exhausted noid sequence pool/)
   end
 
   it "should mint sequential extended-digits" do
@@ -42,7 +42,7 @@ describe Noid::Minter do
     minter = Noid::Minter.new(:template => 'h9.reee')
 
     (minter.template.max).times { expect(minter.mint).to match(/^h9\w\w\w$/) }
-    expect { minter.mint }.to raise_exception
+    expect { minter.mint }.to raise_exception(RuntimeError, /Exhausted noid sequence pool/)
   end
 
   it "should mint unlimited sequential numbers with at least 3 extended digits" do

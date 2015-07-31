@@ -77,7 +77,7 @@ module Noid
     end
 
     def next_random
-      raise RuntimeError, 'Exhausted noid sequence pool' if counters.size == 0
+      raise 'Exhausted noid sequence pool' if counters.size == 0
       i = @rand.rand(counters.size)
       n = counters[i][:value]
       counters[i][:value] += 1

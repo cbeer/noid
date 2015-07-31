@@ -135,7 +135,7 @@ module Noid
         end
       end
 
-      raise RuntimeError, 'Exhausted noid sequence pool' if n > 0
+      raise 'Exhausted noid sequence pool' if n > 0
 
       xdig.reverse
     end

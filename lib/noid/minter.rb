@@ -1,9 +1,9 @@
 module Noid
   class Minter
-    attr_reader :seed, :seq
+    attr_reader :seed, :seq, :template
     attr_writer :counters
 
-    def initialize options = {}
+    def initialize(options = {})
       if options[:state]
         seed(options[:seed])
         @seq = options[:seq]
@@ -25,26 +25,16 @@ module Noid
     def mint
       n = next_in_sequence
       id = template.mint(n)
-      if @after_mint
-        @after_mint.call(self, id)
-      end
+      @after_mint.call(self, id) if @after_mint
       id
-    end
-
-    ##
-    # Noid identifier template
-    #
-    # @return Noid::Template
-    def template
-      @template
     end
 
     ##
     # Is the identifier valid under the template string and checksum?
     # @param [String] id
     # @return bool
-    def valid? id
-      prefix = @template.prefix.empty? ? '' : id[0..@template.prefix.length-1]
+    def valid?(id)
+      prefix = @template.prefix.empty? ? '' : id[0..@template.prefix.length - 1]
       ch = @template.prefix.empty? ? id.split('') : id[@template.prefix.length..-1].split('')
       check = ch.pop if @template.checkdigit?
       return false unless prefix == @template.prefix
@@ -52,10 +42,10 @@ module Noid
       return false unless @template.characters.length == ch.length
       @template.characters.split('').each_with_index do |c, i|
         return false unless Noid::XDIGIT.include? ch[i]
-        return false if c == 'd' and ch[i] =~ /[^\d]/
+        return false if c == 'd' && ch[i] =~ /[^\d]/
       end
 
-      return false unless check.nil? or check == @template.checkdigit(id[0..-2])
+      return false unless check.nil? || check == @template.checkdigit(id[0..-2])
 
       true
     end
@@ -65,7 +55,7 @@ module Noid
     # @param [Integer] seed
     # @param [Integer] seq
     # @return [Random]
-    def seed seed = nil, seq = 0
+    def seed(seed = nil, seq = 0)
       @rand = ::Random.new(seed) if seed
       @rand ||= ::Random.new
       @seed = @rand.seed
@@ -80,8 +70,8 @@ module Noid
       n = @seq
       @seq += 1
       case template.generator
-        when 'r'
-          n = next_random
+      when 'r'
+        n = next_random
       end
       n
     end
@@ -99,7 +89,7 @@ module Noid
     # Counters to use for quasi-random NOID sequences
     def counters
       return @counters if @counters
-      return [] unless template.generator == "r"
+      return [] unless template.generator == 'r'
 
       percounter = template.max / (@max_counters || Noid::MAX_COUNTERS) + 1
       t = 0
@@ -119,7 +109,7 @@ module Noid
     end
 
     def dump
-      { :state => true, :seq => @seq, :seed => @seed, :template => template.template, :counters => Marshal.load(Marshal.dump(counters)) }
+      { state: true, seq: @seq, seed: @seed, template: template.template, counters: Marshal.load(Marshal.dump(counters)) }
     end
   end
 end

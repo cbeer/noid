@@ -15,10 +15,10 @@ require 'rspec'
 require 'rspec/core/rake_task'
 
 desc 'Default: run specs.'
-task :default => :spec
+task default: :spec
 
 RSpec::Core::RakeTask.new do |t|
-  if ENV['COVERAGE'] and RUBY_VERSION =~ /^1.8/
+  if ENV['COVERAGE'] && RUBY_VERSION =~ /^1.8/
     t.rcov = true
     t.rcov_opts = ['--exclude', 'spec', '--exclude', 'gems']
   end
@@ -32,14 +32,13 @@ begin
   doc_destination = File.join(project_root, 'doc')
 
   YARD::Rake::YardocTask.new(:doc) do |yt|
-    yt.files   = Dir.glob(File.join(project_root, 'lib', '**', '*.rb')) + 
-                 [ File.join(project_root, 'README.md') ]
+    yt.files   = Dir.glob(File.join(project_root, 'lib', '**', '*.rb')) +
+      [File.join(project_root, 'README.md')]
     yt.options = ['--output-dir', doc_destination, '--readme', 'README.md']
   end
 rescue LoadError
-  desc "Generate YARD Documentation"
+  desc 'Generate YARD Documentation'
   task :doc do
-    abort "Please install the YARD gem to generate rdoc."
+    abort 'Please install the YARD gem to generate rdoc.'
   end
 end
-

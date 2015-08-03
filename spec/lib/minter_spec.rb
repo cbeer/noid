@@ -112,6 +112,12 @@ describe Noid::Minter do
       minter2 = described_class.new(template: '.redek')
       expect(minter2.valid?(id)).to eq(true)
     end
+    it 'validates an unlimited sequence with mixed digits' do
+      minter = described_class.new(template: '.zed')
+      1000.times { minter.mint }
+      id = minter.mint
+      expect(minter.valid?(id)).to eq(true)
+    end
   end
 
   describe 'seed' do

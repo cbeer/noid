@@ -5,19 +5,15 @@ module Noid
 
     def initialize(options = {})
       if options[:state]
-        seed(options[:seed])
+        # Only set the sequence ivar if this is a stateful minter
         @seq = options[:seq]
-        @template_string = options[:template]
-        @counters = options[:counters]
       else
-        seed(options[:seed], options[:seq])
-        @template_string = options[:template]
         @max_counters = options[:max_counters]
-        @counters = options[:counters]
-
         @after_mint = options[:after_mint]
       end
-      @template ||= Noid::Template.new(@template_string)
+      @counters = options[:counters]
+      @template = Template.new(options[:template])
+      seed(options[:seed], options[:seq])
     end
 
     ##
@@ -39,12 +35,9 @@ module Noid
 
     ##
     # Seed the random number generator with a seed and sequence offset
-    # @param [Integer] seed
-    # @param [Integer] seq
     # @return [Random]
-    def seed(seed = nil, seq = 0)
-      @rand = ::Random.new(seed) if seed
-      @rand ||= ::Random.new
+    def seed(seed_number = nil, seq = 0)
+      @rand = seed_number ? Random.new(seed_number) : Random.new
       @seed = @rand.seed
       @seq = seq || 0
 
@@ -56,20 +49,24 @@ module Noid
     def next_in_sequence
       n = @seq
       @seq += 1
-      case template.generator
-      when 'r'
-        n = next_random
+      if template.generator == 'r'
+        next_random
+      else
+        n
       end
-      n
     end
 
     def next_random
       raise 'Exhausted noid sequence pool' if counters.size == 0
-      i = @rand.rand(counters.size)
+      i = random_bucket
       n = counters[i][:value]
       counters[i][:value] += 1
       counters.delete_at(i) if counters[i][:value] == counters[i][:max]
       n
+    end
+
+    def random_bucket
+      @rand.rand(counters.size)
     end
 
     ##

@@ -199,9 +199,23 @@ describe Noid::Minter do
   end
 
   describe 'multithreading-safe example' do
+    def stateful_minter
+      File.open('minter-state', File::RDWR | File::CREAT, 0644) do |f|
+        f.flock(File::LOCK_EX)
+        yaml = YAML.load(f.read)
+        minter = described_class.new(yaml)
+        yield minter
+        f.rewind
+        yaml = YAML.dump(minter.dump)
+        f.write yaml
+        f.flush
+        f.truncate(f.pos)
+      end
+    end
+
     before do
       require 'yaml'
-      minter = described_class.new(template: '.rd')
+      minter = described_class.new(template: '.reek')
       yaml = YAML.dump(minter.dump)
       File.open('minter-state', 'w') { |f| f.write yaml }
     end
@@ -210,7 +224,22 @@ describe Noid::Minter do
       File.delete('minter-state')
     end
 
+    it 'hops buckets between runs' do
+      bucket_list = []
+      10.times do
+        stateful_minter do |minter|
+          bucket = minter.random_bucket
+          bucket_list << bucket
+          allow(minter).to receive(:random_bucket) { bucket }
+          minter.mint
+        end
+      end
+      expect(bucket_list.uniq.count).to be > 1
+    end
+
     it 'persists state to the filesystem' do
+      # TODO: This is not testing any expectations. Clarify intent and fix.
+      skip
       File.open('minter-state', File::RDWR | File::CREAT, 0644) do|f|
         f.flock(File::LOCK_EX)
         yaml = YAML.load(f.read)

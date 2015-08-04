@@ -120,6 +120,33 @@ describe Noid::Minter do
     end
   end
 
+  describe 'seed' do
+    it 'given a specific seed, identifiers should be replicable' do
+      minter = described_class.new(template: '63q.redek')
+      minter.seed(1)
+      expect(minter.mint).to eq('63q3706')
+
+      minter = described_class.new(template: '63q.redek')
+      minter.seed(1)
+      expect(minter.mint).to eq('63q3706')
+    end
+
+    it 'given a specific seed and sequence, identifiers should be replicable' do
+      minter = described_class.new(template: '63q.redek')
+      minter.seed(23_456_789, 567)
+      mint1 = minter.mint
+      dump1 = minter.dump
+
+      minter = described_class.new(template: '63q.redek')
+      minter.seed(23_456_789, 567)
+      mint2 = minter.mint
+      dump2 = minter.dump
+      expect(dump1).to eql(dump2)
+      expect(mint1).to eql(mint2)
+      expect(mint1).to eq('63qb41v') # "63qh305" was the value from a slightly buggy impl
+    end
+  end
+
   describe 'dump and reload' do
     it 'dumps the minter state' do
       minter = described_class.new(template: '.sddd')
@@ -136,6 +163,7 @@ describe Noid::Minter do
     it 'dumps the seed, sequence, and counters for the RNG' do
       minter = described_class.new(template: '.rddd')
       d = minter.dump
+      expect(d[:seq]).to eq 0
       expect(described_class.new(d).instance_variable_get('@rand').seed).to eq(minter.instance_variable_get('@rand').seed)
     end
 
@@ -149,6 +177,24 @@ describe Noid::Minter do
       arr2 = 10.times.map { minter.mint }
 
       expect(arr).to eq(arr2)
+    end
+  end
+
+  describe 'with large seeds' do
+    it 'does not reproduce noids with constructed sequences' do
+      minter = described_class.new(template: 'ldpd:.reeeeeeee')
+      minter.seed(192_548_637_498_850_379_850_405_658_298_152_906_991)
+      first_values = (1..1000).collect { |_c| minter.mint }
+
+      values = []
+      (0..999).each do |i|
+        minter = described_class.new(template: 'ldpd:.reeeeeeee')
+        minter.seed(192_548_637_498_850_379_850_405_658_298_152_906_991, i)
+        values << minter.mint
+        expect(values[i]).to eql first_values[i]
+      end
+      values.uniq!
+      expect(values.length).to eql 1000
     end
   end
 

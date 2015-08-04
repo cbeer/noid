@@ -31,6 +31,14 @@ module Noid
     end
 
     ##
+    # Reseed the RNG
+    def seed(seed_number, sequence = 0)
+      @rand = Random.new(seed_number)
+      sequence.times { next_random }
+      @rand
+    end
+
+    ##
     # Is the identifier valid under the template string and checksum?
     # @param [String] id
     # @return bool
@@ -67,7 +75,7 @@ module Noid
     # Counters to use for quasi-random NOID sequences
     def counters
       return @counters if @counters
-      return [] unless template.generator == 'r'
+      return [] unless random?
 
       percounter = template.max / (@max_counters || Noid::MAX_COUNTERS) + 1
       t = 0

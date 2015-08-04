@@ -164,7 +164,7 @@ describe Noid::Minter do
       minter = described_class.new(template: '.rddd')
       d = minter.dump
       expect(d[:seq]).to eq 0
-      expect(d[:seed]).to eq(minter.instance_variable_get('@seed'))
+      expect(described_class.new(d).instance_variable_get('@rand').seed).to eq(minter.instance_variable_get('@rand').seed)
     end
 
     it "allows a random identifier minter to be 'replayed' accurately" do

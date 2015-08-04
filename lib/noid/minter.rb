@@ -1,19 +1,24 @@
 module Noid
   class Minter
-    attr_reader :seed, :seq, :template
+    attr_reader :template, :seq
     attr_writer :counters
 
     def initialize(options = {})
-      if options[:state]
-        # Only set the sequence ivar if this is a stateful minter
-        @seq = options[:seq]
-      else
-        @max_counters = options[:max_counters]
-        @after_mint = options[:after_mint]
-      end
-      @counters = options[:counters]
       @template = Template.new(options[:template])
-      seed(options[:seed], options[:seq])
+
+      @counters = options[:counters]
+      @max_counters = options[:max_counters]
+
+      # callback when an identifier is minted
+      @after_mint = options[:after_mint]
+
+      # used for random minters
+      @rand = options[:rand] if options[:rand].is_a? Random
+      @rand ||= Marshal.load(options[:rand]) if options[:rand]
+      @rand ||= Random.new(options[:seed] || Random.new_seed)
+
+      # used for sequential minters
+      @seq = options[:seq] || 0
     end
 
     ##
@@ -26,6 +31,14 @@ module Noid
     end
 
     ##
+    # Reseed the RNG
+    def seed(seed_number, sequence = 0)
+      @rand = Random.new(seed_number)
+      sequence.times { next_random }
+      @rand
+    end
+
+    ##
     # Is the identifier valid under the template string and checksum?
     # @param [String] id
     # @return bool
@@ -33,26 +46,11 @@ module Noid
       template.valid?(id)
     end
 
-    ##
-    # Seed the random number generator with a seed and sequence offset
-    # @return [Random]
-    def seed(seed_number = nil, seq = 0)
-      @rand = seed_number ? Random.new(seed_number) : Random.new
-      @seed = @rand.seed
-      @seq = seq || 0
-
-      seq.times { next_random } if seq
-
-      @rand
-    end
-
     def next_in_sequence
-      n = @seq
-      @seq += 1
-      if template.generator == 'r'
+      if random?
         next_random
       else
-        n
+        next_sequence
       end
     end
 
@@ -65,6 +63,10 @@ module Noid
       n
     end
 
+    def next_sequence
+      seq.tap { @seq += 1 }
+    end
+
     def random_bucket
       @rand.rand(counters.size)
     end
@@ -73,7 +75,7 @@ module Noid
     # Counters to use for quasi-random NOID sequences
     def counters
       return @counters if @counters
-      return [] unless template.generator == 'r'
+      return [] unless random?
 
       percounter = template.max / (@max_counters || Noid::MAX_COUNTERS) + 1
       t = 0
@@ -93,7 +95,16 @@ module Noid
     end
 
     def dump
-      { state: true, seq: @seq, seed: @seed, template: template.template, counters: Marshal.load(Marshal.dump(counters)) }
+      {
+        template: template.template,
+        counters: Marshal.load(Marshal.dump(counters)),
+        seq: seq,
+        rand: Marshal.dump(@rand) # we would Marshal.load this too, but serializers don't persist the internal state correctly
+      }
+    end
+
+    def random?
+      template.generator == 'r'
     end
   end
 end

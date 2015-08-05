@@ -198,6 +198,69 @@ describe Noid::Minter do
     end
   end
 
+  describe '#remaining' do
+    context 'with a sequential template' do
+      subject { described_class.new(template: '.sed') }
+      context 'with a new minter' do
+        it 'returns 290' do
+          expect(subject.remaining).to eq 290
+        end
+      end
+      context 'with an in-progress minter' do
+        before { 100.times { subject.mint } }
+        it 'returns 190' do
+          expect(subject.remaining).to eq 190
+        end
+      end
+      context 'with an exhausted minter' do
+        before { 290.times { subject.mint } }
+        it 'returns 0' do
+          expect(subject.remaining).to eq 0
+        end
+      end
+    end
+    context 'with a random template' do
+      subject { described_class.new(template: '.reek') }
+      context 'with a new minter' do
+        it 'returns 841' do
+          expect(subject.remaining).to eq 841
+        end
+      end
+      context 'with an in-progress minter' do
+        before { 441.times { subject.mint } }
+        it 'returns 400' do
+          expect(subject.remaining).to eq 400
+        end
+      end
+      context 'with an exhausted minter' do
+        before { 841.times { subject.mint } }
+        it 'returns 0' do
+          expect(subject.remaining).to eq 0
+        end
+      end
+    end
+    context 'with an unlimited template' do
+      subject { described_class.new(template: '.zdd') }
+      context 'with a new minter' do
+        it 'returns unlimited ' do
+          expect(subject.remaining).to eq Float::INFINITY
+        end
+      end
+      context 'with an in-progress minter' do
+        before { 51.times { subject.mint } }
+        it 'returns unlimited' do
+          expect(subject.remaining).to eq Float::INFINITY
+        end
+      end
+      context 'with a minter that appears to be exhausted' do
+        before { 101.times { subject.mint } }
+        it 'returns unlimited' do
+          expect(subject.remaining).to eq Float::INFINITY
+        end
+      end
+    end
+  end
+
   describe 'multithreading-safe example' do
     def stateful_minter
       File.open('minter-state', File::RDWR | File::CREAT, 0644) do |f|

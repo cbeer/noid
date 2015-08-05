@@ -60,6 +60,7 @@ module Noid
     def mint
       n = next_in_sequence
       id = template.mint(n)
+      next_sequence if random?
       @after_mint.call(self, id) if @after_mint
       id
     end
@@ -78,6 +79,14 @@ module Noid
     # @return bool
     def valid?(id)
       template.valid?(id)
+    end
+
+    ##
+    # Returns the number of identifiers remaining in the minter
+    # @return [Fixnum]
+    def remaining
+      return Float::INFINITY if unbounded?
+      template.max - seq
     end
 
     def next_in_sequence
@@ -139,6 +148,10 @@ module Noid
 
     def random?
       template.generator == 'r'
+    end
+
+    def unbounded?
+      template.generator == 'z'
     end
   end
 end

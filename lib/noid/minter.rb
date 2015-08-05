@@ -1,4 +1,38 @@
 module Noid
+  # Minters come in two varieties: stateful and stateless. A stateless minter --
+  # typically used with random rather than sequential templates, since minting
+  # in a sequence requires state to know the current position in the sequence --
+  # mints random identifiers and **will** mint duplicates eventually, depending
+  # upon the size of the identifier space in the provided template.
+  #
+  # A stateful minter is a minter that has been initialized with parameters
+  # reflecting its current state. (A common way to store state between mintings
+  # is to call the minter `#dump` method which serializes the necessary parts of
+  # minter state to a hash, which may be persisted on disk or in other
+  # back-ends.) The parameters that are included are:
+  #
+  #  * template, a string setting the identifier pattern
+  #  * counters, a hash of "buckets" each with a current and max value
+  #  * seq, an integer reflecting how far into the sequence the minter is
+  #  * rand, a random number generator
+  #
+  # Minters using random templates use a number of containers, each with a
+  # similar number of identifiers to split the identifier space into manageable
+  # chunks (or "buckets") and to increase the appearance of randomness in the
+  # identifiers.
+  #
+  # As an example, let's assume a random identifier template that has 100
+  # possible values. It might have 10 buckets, each with 10 identifiers that
+  # look similar because they have similar numeric values. Every call to `#mint`
+  # will use the random number generator stored in the minter's state to select
+  # a bucket at random. Stateless minters will select a bucket at random as
+  # well.
+  #
+  # The difference between stateless and stateful minters in this context is
+  # that stateful random minters are *replayable* as long as you have persisted
+  # the minter's state, which includes a random number generator part of which
+  # is its original seed, which may be used over again in the future to replay
+  # the sequence of identifiers in this minter
   class Minter
     attr_reader :template, :seq
     attr_writer :counters

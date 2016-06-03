@@ -6,6 +6,18 @@ describe Noid::Template do
     it 'initializes without raising' do
       expect { described_class.new(template) }.not_to raise_error
     end
+    it 'stringifies cleanly as the template string' do
+      expect(described_class.new(template).to_s).to eq(template)
+    end
+    describe 'comparison' do
+      let(:object) { described_class.new(template) }
+      it 'same templates produce equivalent objects' do
+        expect(object).to eq(described_class.new(object.template))
+      end
+      it 'different templates produce non-equivalent objects' do
+        expect(object).not_to eq(described_class.new('.redddek'))
+      end
+    end
   end
   context 'with a bogus template' do
     let(:template) { 'foobar' }

@@ -14,7 +14,6 @@ module Noid
       str = prefix
       str += n2xdig(n)
       str += checkdigit(str) if checkdigit?
-
       str
     end
 
@@ -41,6 +40,15 @@ module Noid
     # minimum sequence value
     def min
       @min ||= 0
+    end
+
+    def to_s
+      template
+    end
+
+    def ==(other)
+      return false unless other.is_a? Noid::Template
+      template == other.template
     end
 
     ##

@@ -1,5 +1,9 @@
 require 'spec_helper'
 
+
+class OtherTemplate < Noid::Template
+end
+
 describe Noid::Template do
   context 'with a valid template' do
     let(:template) { '.redek' }
@@ -11,11 +15,18 @@ describe Noid::Template do
     end
     describe 'comparison' do
       let(:object) { described_class.new(template) }
+      it 'unrelated object is not equivalent' do
+        expect(object).not_to eq(Array.new)
+      end
+      it 'descendant object with same template is equivalent' do
+        expect(object).to eq(OtherTemplate.new(object.template))
+      end
       it 'same templates produce equivalent objects' do
         expect(object).to eq(described_class.new(object.template))
       end
       it 'different templates produce non-equivalent objects' do
         expect(object).not_to eq(described_class.new('.redddek'))
+        expect(object).not_to eq(OtherTemplate.new('.redddek'))
       end
     end
   end

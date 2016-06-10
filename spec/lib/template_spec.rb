@@ -1,6 +1,5 @@
 require 'spec_helper'
 
-
 class OtherTemplate < Noid::Template
 end
 
@@ -10,11 +9,16 @@ describe Noid::Template do
     it 'initializes without raising' do
       expect { described_class.new(template) }.not_to raise_error
     end
+    let(:object) { described_class.new(template) }
+    it 'initializes from Template object' do
+      other = nil
+      expect { other = described_class.new(object) }.not_to raise_error
+      expect(object).to eq(other)
+    end
     it 'stringifies cleanly as the template string' do
-      expect(described_class.new(template).to_s).to eq(template)
+      expect(object.to_s).to eq(template)
     end
     describe 'comparison' do
-      let(:object) { described_class.new(template) }
       it 'unrelated object is not equivalent' do
         expect(object).not_to eq(Array.new)
       end

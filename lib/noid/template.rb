@@ -4,9 +4,9 @@ module Noid
 
     VALID_PATTERN = /\A(.*)\.([rsz])([ed]+)(k?)\Z/
 
-    # @param [String] template A Template is a coded string of the form Prefix.Mask that governs how identifiers will be minted.
+    # @param [String, Noid::Template] template a coded string of the form "Prefix.Mask" governing how identifiers will be minted.
     def initialize(template)
-      @template = template
+      @template = template.to_s
       parse!
     end
 
